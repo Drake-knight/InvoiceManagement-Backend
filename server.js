@@ -14,11 +14,12 @@ const PORT = process.env.PORT || 5100;
 
 const main = async () => {
     await connectToMySQL();
+    // on local add regex to allow localhost
     app.use(
         cors({
             credentials: true,
             origin: (origin, callback) => {
-                if (origin === 'https://invoice-management-frontend-nine.vercel.app' || origin.startsWith('http://localhost')) {
+                if (origin === 'https://invoice-management-frontend-nine.vercel.app') {
                     callback(null, true)
                 } else {
                     callback(new Error('Not allowed by CORS'))
