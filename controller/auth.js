@@ -9,18 +9,21 @@ dotenv.config();
 
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
+
 const INVOICE_SECRET = process.env.INVOICE_SECRET;
 
 const setCookies = (res, data) => {
     const token = jwt.sign(data, INVOICE_SECRET);
 
-    const cookieOptions = {
-        sameSite: IS_PRODUCTION ? "none" : "none",
+    res.cookie("INVOICE_AUTH_TOKEN", token, {
         secure: IS_PRODUCTION,
-    };
+        httpOnly: true,
 
-    res.cookie("INVOICE_AUTH_TOKEN", token, cookieOptions);
-    res.cookie("INVOICE_USER", JSON.stringify(data), cookieOptions);
+    });
+
+    res.cookie("INVOICE_USER", JSON.stringify(data), {
+        secure: IS_PRODUCTION,
+    });
 };
 
 
@@ -170,13 +173,20 @@ const resetPasswordFromCode = async (req, res) => {
 //Logout
 const logout = async (req, res) => {
     try {
-        res.clearCookie("INVOICE_AUTH_TOKEN");
-        res.clearCookie("INVOICE_USER");
+        res.clearCookie("INVOICE_AUTH_TOKEN", {
+            secure: IS_PRODUCTION,
+            httpOnly: true,
+        });
+
+        res.clearCookie("INVOICE_USER", {
+            secure: IS_PRODUCTION,
+        });
         res.json({ message: "Logged Out" });
     } catch (error) {
         if (error.code === 9090) {
             res.status(400).json({ message: "Unauthorized Request" });
         } else {
+            console.log(error)
             res.status(500).json({ message: "An error occured." });
         }
     }
