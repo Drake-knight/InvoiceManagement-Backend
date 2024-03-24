@@ -15,9 +15,10 @@ const setCookies = (res, data) => {
     const token = jwt.sign(data, INVOICE_SECRET);
 
     res.cookie("INVOICE_AUTH_TOKEN", token, {
-        sameSite: "none",
+        sameSite: IS_PRODUCTION ? "none" : "Lax",
         httpOnly: true,
         secure: true,
+        ...(IS_PRODUCTION ? { partitioned: true } : {}),
     });
 
     res.cookie("INVOICE_USER", JSON.stringify(data), {
