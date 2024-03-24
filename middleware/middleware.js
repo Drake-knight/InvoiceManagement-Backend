@@ -2,15 +2,21 @@ import jwt from "jsonwebtoken";
 
 export const verifyRequest = (req, res, next) => {
     try {
-        const payload = jwt.verify(
-            req.cookies["INVOICE_AUTH_TOKEN"],
-            process.env.INVOICE_SECRET
-        );
-        res.locals = payload;
-        return next();
+        let token;
+        const bearerToken = req.headers.authorization;
+        if (bearerToken) {
+            token = bearerToken.split(' ')[1];
+
+        }
+        if (!token) {
+            return res.status(401).send("No token provided");
+        }
+
+        const decoded = jwt.verify(token, process.env.INVOICE_SECRET);
+        res.locals.user = decoded;
+        next();
     } catch (error) {
         console.error(error);
-        return res.status(400).send("Unauthorized Request");
+        return res.status(401).send("Unauthorized Request");
     }
 };
-

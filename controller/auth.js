@@ -12,20 +12,9 @@ const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
 const INVOICE_SECRET = process.env.INVOICE_SECRET;
 
-const setCookies = (res, data) => {
-    const token = jwt.sign(data, INVOICE_SECRET);
-
-    res.cookie("INVOICE_AUTH_TOKEN", token, {
-        secure: false,
-        sameSite: 'Lax'
-    });
-
-    res.cookie("INVOICE_USER", JSON.stringify(data), {
-        secure: false,
-        sameSite: 'Lax'
-    });
+const generateToken = (data) => {
+    return jwt.sign(data, INVOICE_SECRET, { expiresIn: '1h' });
 };
-
 
 // Register Route
 const register = async (req, res) => {
@@ -39,13 +28,14 @@ const register = async (req, res) => {
             'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
             [name, email, hashedPassword]
         );
-        setCookies(res, {
+        const token = generateToken({
             name,
             email,
             userId: data[0].insertId,
         });
 
-        res.json({ name });
+
+        res.json({ token, user_id: data[0].insertId });
     } catch (error) {
         console.log(error);
 
@@ -86,13 +76,12 @@ const login = async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({ message: `Wrong password. Try again or click Forgot password to reset it.` });
         }
-        setCookies(res, {
+        const token = generateToken({
             name: user.username,
             email: user.email,
             userId: user.user_id,
         });
-
-        res.json({ name: user.username });
+        res.json({ token, user_id: user.user_id });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Internal Server Error" });

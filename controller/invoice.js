@@ -105,7 +105,6 @@ const getAllInvoices = async (req, res) => {
             }
             return acc;
         }, []);
-
         return res.status(200).json(invoices);
     } catch (error) {
         console.error('Error getting invoices:', error);
