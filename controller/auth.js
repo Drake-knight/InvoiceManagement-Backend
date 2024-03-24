@@ -17,12 +17,12 @@ const setCookies = (res, data) => {
 
     res.cookie("INVOICE_AUTH_TOKEN", token, {
         secure: false,
-        sameSite: 'None'
+        sameSite: 'Lax'
     });
 
     res.cookie("INVOICE_USER", JSON.stringify(data), {
         secure: false,
-        sameSite: 'None'
+        sameSite: 'Lax'
     });
 };
 
