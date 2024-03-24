@@ -17,7 +17,7 @@ const main = async () => {
     app.use(
         cors({
             credentials: true,
-            origin: '*'
+            origin: 'https://invoice-management-frontend-nine.vercel.app',
         })
     );
 
