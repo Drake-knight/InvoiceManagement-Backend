@@ -14,15 +14,13 @@ const INVOICE_SECRET = process.env.INVOICE_SECRET;
 const setCookies = (res, data) => {
     const token = jwt.sign(data, INVOICE_SECRET);
 
-    res.cookie("INVOICE_AUTH_TOKEN", token, {
-        sameSite: "none",
-        secure: true,
-    });
+    const cookieOptions = {
+        sameSite: IS_PRODUCTION ? "none" : "lax",
+        secure: IS_PRODUCTION,
+    };
 
-    res.cookie("INVOICE_USER", JSON.stringify(data), {
-        sameSite: "none",
-        secure: true,
-    });
+    res.cookie("INVOICE_AUTH_TOKEN", token, cookieOptions);
+    res.cookie("INVOICE_USER", JSON.stringify(data), cookieOptions);
 };
 
 
