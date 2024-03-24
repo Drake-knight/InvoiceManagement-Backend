@@ -18,14 +18,14 @@ const setCookies = (res, data) => {
     res.cookie("INVOICE_AUTH_TOKEN", token, {
         secure: IS_PRODUCTION,
         httpOnly: true,
-
+        sameSite: 'None' // Added SameSite attribute
     });
 
     res.cookie("INVOICE_USER", JSON.stringify(data), {
         secure: IS_PRODUCTION,
+        sameSite: 'None' // Added SameSite attribute
     });
 };
-
 
 
 // Register Route
