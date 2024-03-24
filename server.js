@@ -18,13 +18,7 @@ const main = async () => {
     app.use(
         cors({
             credentials: true,
-            origin: (origin, callback) => {
-                if (origin === 'https://invoice-management-frontend-nine.vercel.app') {
-                    callback(null, true)
-                } else {
-                    callback(new Error('Not allowed by CORS'))
-                }
-            }
+            origin: 'https://invoice-management-frontend.vercel.app'
         })
     );
 
