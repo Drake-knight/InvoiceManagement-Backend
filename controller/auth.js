@@ -22,8 +22,9 @@ const setCookies = (res, data) => {
     });
 
     res.cookie("INVOICE_USER", JSON.stringify(data), {
-        sameSite: "Lax",
-        secure: IS_PRODUCTION,
+        sameSite: IS_PRODUCTION ? "none" : "Lax",
+        httpOnly: true,
+        secure: true,
         ...(IS_PRODUCTION ? { partitioned: true } : {}),
     });
 };
