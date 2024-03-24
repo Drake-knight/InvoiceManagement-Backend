@@ -15,7 +15,7 @@ const setCookies = (res, data) => {
     const token = jwt.sign(data, INVOICE_SECRET);
 
     const cookieOptions = {
-        sameSite: IS_PRODUCTION ? "none" : "lax",
+        sameSite: IS_PRODUCTION ? "lax" : "none",
         secure: IS_PRODUCTION,
     };
 
