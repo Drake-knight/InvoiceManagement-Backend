@@ -13,6 +13,7 @@ const INVOICE_SECRET = process.env.INVOICE_SECRET;
 
 const setCookies = (res, data) => {
     const token = jwt.sign(data, INVOICE_SECRET);
+
     res.cookie("INVOICE_AUTH_TOKEN", token, {
         sameSite: "none",
         httpOnly: true,
@@ -20,9 +21,12 @@ const setCookies = (res, data) => {
     });
 
     res.cookie("INVOICE_USER", JSON.stringify(data), {
+        sameSite: "Lax",
         secure: IS_PRODUCTION,
+        ...(IS_PRODUCTION ? { partitioned: true } : {}),
     });
 };
+
 
 
 // Register Route
