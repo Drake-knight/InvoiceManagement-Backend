@@ -15,24 +15,24 @@ const PORT = process.env.PORT || 5100;
 const main = async () => {
     await connectToMySQL();
     // on local add regex to allow localhost
-    // app.use(
-    //     cors({
-    //         credentials: true,
-    //         origin: 'https://invoice-management-frontend.vercel.app'
-    //     })
-    // );
     app.use(
         cors({
             credentials: true,
-            origin: (origin, callback) => {
-                if (origin === 'https://invoice-management-frontend-nine.vercel.app' || /^http:\/\/localhost(:\d+)?$/.test(origin)) {
-                    callback(null, true)
-                } else {
-                    callback(new Error('Not allowed by CORS'))
-                }
-            }
+            origin: 'https://invoice-management-frontend.vercel.app'
         })
     );
+    // app.use(
+    //     cors({
+    //         credentials: true,
+    //         origin: (origin, callback) => {
+    //             if (origin === 'https://invoice-management-frontend-nine.vercel.app' || /^http:\/\/localhost(:\d+)?$/.test(origin)) {
+    //                 callback(null, true)
+    //             } else {
+    //                 callback(new Error('Not allowed by CORS'))
+    //             }
+    //         }
+    //     })
+    // );
 
     app.use(cookieParser());
     await Customer.createTable();
