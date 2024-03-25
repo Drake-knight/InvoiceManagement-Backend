@@ -3,7 +3,6 @@ import pool from "../config/config.js";
 const addInvoice = async (req, res) => {
     const { customer_name, customer_email, customer_phone, date, line_items, userId } = req.body;
     const created_by = userId;
-    console.log(req.body, 'req.body');
     if (!customer_name || !date || !line_items || line_items.length === 0) {
         return res.status(400).json({ message: 'Customer name,  date, and line items are required' });
     }
@@ -74,6 +73,7 @@ const getAllInvoices = async (req, res) => {
                 customers.customer_name,
                 customers.customer_email,
                 customers.customer_phone,
+                line_items.line_item_id,
                 line_items.item_name,
                 line_items.quantity,
                 line_items.price
@@ -170,10 +170,7 @@ const editInvoice = async (req, res) => {
 
             valuesInvoice.push(invoice_id);
 
-            console.log(setClauseInvoice, 'setClauseInvoice');
-
             valuesInvoice.shift();
-            console.log(valuesInvoice, 'valuesInvoice');
 
             await connection.query(`UPDATE invoices SET ${setClauseInvoice} WHERE invoice_id = ?`, valuesInvoice);
 
@@ -196,11 +193,104 @@ const editInvoice = async (req, res) => {
     }
 };
 
+const deleteLineItem = async (req, res) => {
+    const { line_item_id } = req.params;
 
+    try {
+        const connection = await pool.getConnection();
+        await connection.beginTransaction();
+
+        try {
+            await connection.query('DELETE FROM line_items WHERE line_item_id = ?', [line_item_id]);
+
+            await connection.commit();
+            connection.release();
+            return res.status(200).json({ message: 'Line item deleted successfully' });
+        } catch (error) {
+            await connection.rollback();
+            connection.release();
+            console.error('Error deleting line item:', error);
+            return res.status(500).json({ message: 'Failed to delete line item' });
+        }
+    } catch (err) {
+        console.error('Unexpected error:', err);
+        return res.status(500).json({ message: 'Unexpected error' });
+    }
+};
+
+const editLineItem = async (req, res) => {
+    const { line_item_id } = req.params;
+    const fieldsToUpdate = req.body;
+
+    try {
+        const connection = await pool.getConnection();
+        await connection.beginTransaction();
+
+        try {
+            let setClause = '';
+            const values = [];
+
+            const validFields = ['item_name', 'quantity', 'price'];
+
+            validFields.forEach(field => {
+                if (fieldsToUpdate[field]) {
+                    setClause += `${field} = ?, `;
+                    values.push(fieldsToUpdate[field]);
+                }
+            });
+
+            setClause = setClause.slice(0, -2);
+
+            values.push(line_item_id);
+
+            await connection.query(`UPDATE line_items SET ${setClause} WHERE line_item_id = ?`, values);
+
+            await connection.commit();
+            connection.release();
+            return res.status(200).json({ message: 'Line item updated successfully' });
+        } catch (error) {
+            await connection.rollback();
+            connection.release();
+            console.error('Error updating line item:', error);
+            return res.status(500).json({ message: 'Failed to update line item' });
+        }
+    } catch (err) {
+        console.error('Unexpected error:', err);
+        return res.status(500).json({ message: 'Unexpected error' });
+    }
+};
+
+const addLineItem = async (req, res) => {
+    const { invoice_id, item_name, quantity, price } = req.body;
+
+    try {
+        const connection = await pool.getConnection();
+        await connection.beginTransaction();
+
+        try {
+            await connection.query('INSERT INTO line_items (invoice_id, item_name, quantity, price) VALUES (?, ?, ?, ?)', [invoice_id, item_name, quantity, price]);
+
+            await connection.commit();
+            connection.release();
+            return res.status(201).json({ message: 'Line item added successfully' });
+        } catch (error) {
+            await connection.rollback();
+            connection.release();
+            console.error('Error adding line item:', error);
+            return res.status(500).json({ message: 'Failed to add line item' });
+        }
+    } catch (err) {
+        console.error('Unexpected error:', err);
+        return res.status(500).json({ message: 'Unexpected error' });
+    }
+};
 
 export default {
     getAllInvoices,
     addInvoice,
     deleteInvoice,
-    editInvoice
+    editInvoice,
+    deleteLineItem,
+    editLineItem,
+    addLineItem
 };

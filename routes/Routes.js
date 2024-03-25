@@ -14,6 +14,8 @@ Router.get("/invoices/:user_id", verifyRequest, invoice.getAllInvoices);
 Router.post("/invoices", verifyRequest, invoice.addInvoice);
 Router.delete("/invoices/:invoice_id", verifyRequest, invoice.deleteInvoice);
 Router.put("/invoices/:invoice_id", verifyRequest, invoice.editInvoice);
-
+Router.delete("/line-items/:line_item_id", verifyRequest, invoice.deleteLineItem);
+Router.post("/line-items", verifyRequest, invoice.addLineItem);
+Router.put("/line-items/:line_item_id", verifyRequest, invoice.editLineItem);
 
 export default Router;
