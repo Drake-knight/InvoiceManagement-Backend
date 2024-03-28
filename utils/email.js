@@ -22,21 +22,21 @@ const mailGenerators = {
         theme: "default",
         product: {
             name: "Invoice-Gen",
-            link: "https://aat.com"
+            link: "invoice-management-frontend.vercel.app"
         }
     }),
     "welcome": new Mailgen({
         theme: "default",
         product: {
             name: "Invoice-Gen",
-            link: "https://aat.com"
+            link: "invoice-management-frontend.vercel.app"
         }
     }),
     "password-reset": new Mailgen({
         theme: "default",
         product: {
             name: "Invoice-Gen",
-            link: "https://aat.com"
+            link: "invoice-management-frontend.vercel.app"
         }
     })
 };
